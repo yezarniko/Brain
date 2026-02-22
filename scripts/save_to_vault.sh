@@ -195,6 +195,9 @@ main() {
     fi
   } > "$out_path"
 
+  local commit_out
+  commit_out="$("${SCRIPT_DIR}/commit_vault_save.sh" "${out_path}")"
+
   echo "SAVED_PATH=${out_path}"
   echo "CATEGORY=${category}"
   echo "TAGS=$(printf '%s' "$tags" | paste -sd ',' -)"
@@ -203,6 +206,7 @@ main() {
   else
     echo "RELATED="
   fi
+  printf '%s\n' "${commit_out}"
 }
 
 main "$@"

@@ -19,22 +19,44 @@ has() {
   command -v "$1" >/dev/null 2>&1
 }
 
+try_clipboard_cmd() {
+  # Run a clipboard backend; if it fails (e.g. missing DISPLAY), try next.
+  if "$@" 2>/dev/null; then
+    return 0
+  fi
+  return 1
+}
+
 get_clipboard() {
   if has pbpaste; then
-    pbpaste
-  elif has wl-paste; then
-    wl-paste --no-newline
-  elif has xclip; then
-    xclip -selection clipboard -o
-  elif has xsel; then
-    xsel --clipboard --output
-  elif has powershell.exe; then
-    powershell.exe -NoProfile -Command 'Get-Clipboard'
-  else
-    echo "No supported clipboard tool found." >&2
-    echo "Install one of: wl-clipboard, xclip, xsel (Linux)" >&2
-    exit 1
+    if try_clipboard_cmd pbpaste; then
+      return 0
+    fi
   fi
+  if has wl-paste; then
+    if try_clipboard_cmd wl-paste --no-newline; then
+      return 0
+    fi
+  fi
+  if has xclip; then
+    if try_clipboard_cmd xclip -selection clipboard -o; then
+      return 0
+    fi
+  fi
+  if has xsel; then
+    if try_clipboard_cmd xsel --clipboard --output; then
+      return 0
+    fi
+  fi
+  if has powershell.exe; then
+    if try_clipboard_cmd powershell.exe -NoProfile -Command 'Get-Clipboard'; then
+      return 0
+    fi
+  fi
+
+  echo "Failed to read clipboard with available tools." >&2
+  echo "If running in Linux, ensure DISPLAY/WAYLAND_DISPLAY and auth are available in this shell." >&2
+  exit 1
 }
 
 set_clipboard() {
@@ -46,20 +68,34 @@ set_clipboard() {
   fi
 
   if has pbcopy; then
-    printf '%s' "$input" | pbcopy
-  elif has wl-copy; then
-    printf '%s' "$input" | wl-copy
-  elif has xclip; then
-    printf '%s' "$input" | xclip -selection clipboard
-  elif has xsel; then
-    printf '%s' "$input" | xsel --clipboard --input
-  elif has clip.exe; then
-    printf '%s' "$input" | clip.exe
-  else
-    echo "No supported clipboard tool found." >&2
-    echo "Install one of: wl-clipboard, xclip, xsel (Linux)" >&2
-    exit 1
+    if printf '%s' "$input" | pbcopy 2>/dev/null; then
+      return 0
+    fi
   fi
+  if has wl-copy; then
+    if printf '%s' "$input" | wl-copy 2>/dev/null; then
+      return 0
+    fi
+  fi
+  if has xclip; then
+    if printf '%s' "$input" | xclip -selection clipboard 2>/dev/null; then
+      return 0
+    fi
+  fi
+  if has xsel; then
+    if printf '%s' "$input" | xsel --clipboard --input 2>/dev/null; then
+      return 0
+    fi
+  fi
+  if has clip.exe; then
+    if printf '%s' "$input" | clip.exe 2>/dev/null; then
+      return 0
+    fi
+  fi
+
+  echo "Failed to write clipboard with available tools." >&2
+  echo "If running in Linux, ensure DISPLAY/WAYLAND_DISPLAY and auth are available in this shell." >&2
+  exit 1
 }
 
 main() {
