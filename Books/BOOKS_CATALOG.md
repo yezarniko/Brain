@@ -6,8 +6,8 @@
 - `electronics-communications`: 9
 - `math-statistics`: 9
 - `programming`: 8
-- `systems-design`: 3
-- `misc`: 5
+- `systems-design`: 4
+- `misc`: 4
 
 ## ai-ml (9)
 
@@ -56,16 +56,16 @@
 - cuda_by_example.book.pdf
 - toaz.info-dive-into-design-patterns-pr_a5a34abe2a6b284e13212153ba628e2e.pdf
 
-## systems-design (3)
+## systems-design (4)
 
+- Designing Data-Intensive Applications - Martin Kleppmann.pdf
 - Rockstar-Developer-2025.pdf
 - Software Engg.pdf
 - System Design Interview An Insider’s Guide by Alex Xu (z-lib.org).pdf
 
-## misc (5)
+## misc (4)
 
 - ColourTheory_UThitLwinSoe.pdf
 - Practical+Statistics+for+Data+Scientists+50++Essential+Concepts+Using+R+and+Python+by+Peter+Bruce,+Andrew+Bruce,+Peter+Gedeck.pdf
-- b.pdf
 - bitcoin.pdf
 - project.pdf
