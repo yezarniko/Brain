@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Auto-push current branch after each successful commit.
+branch="$(git symbolic-ref --quiet --short HEAD || true)"
+remote="${VAULT_AUTO_PUSH_REMOTE:-origin}"
+
+if [[ -z "${branch}" ]]; then
+  exit 0
+fi
+
+if ! git config --get "remote.${remote}.url" >/dev/null 2>&1; then
+  exit 0
+fi
+
+if git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}" >/dev/null 2>&1; then
+  if ! git push "${remote}" "${branch}"; then
+    echo "post-commit: push failed for ${remote}/${branch}" >&2
+  fi
+else
+  if ! git push -u "${remote}" "${branch}"; then
+    echo "post-commit: push failed while setting upstream ${remote}/${branch}" >&2
+  fi
+fi

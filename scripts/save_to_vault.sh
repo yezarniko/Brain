@@ -4,7 +4,26 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VAULT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 SAVE_DIR_NAME="${VAULT_SAVE_DIR:-Notes}"
-OUT_DIR="${VAULT_ROOT}/${SAVE_DIR_NAME}"
+VAULT_ABS="$(realpath -m -- "${VAULT_ROOT}")"
+DEFAULT_OUT_DIR="${VAULT_ABS}/Notes"
+
+if [[ "${SAVE_DIR_NAME}" = /* ]]; then
+  CANDIDATE_DIR="$(realpath -m -- "${SAVE_DIR_NAME}")"
+  if [[ "${CANDIDATE_DIR}" == "${VAULT_ABS}" ]]; then
+    OUT_DIR="${DEFAULT_OUT_DIR}"
+  elif [[ "${CANDIDATE_DIR}" == "${VAULT_ABS}/"* ]]; then
+    OUT_DIR="${CANDIDATE_DIR}"
+  else
+    OUT_DIR="${DEFAULT_OUT_DIR}"
+  fi
+else
+  CANDIDATE_DIR="$(realpath -m -- "${VAULT_ABS}/${SAVE_DIR_NAME}")"
+  if [[ "${CANDIDATE_DIR}" == "${VAULT_ABS}" ]]; then
+    OUT_DIR="${DEFAULT_OUT_DIR}"
+  else
+    OUT_DIR="${CANDIDATE_DIR}"
+  fi
+fi
 
 mkdir -p "${OUT_DIR}"
 

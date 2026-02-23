@@ -19,7 +19,7 @@ main() {
   fi
 
   local note_path="$1"
-  local script_dir vault_root rel_path filename msg sha
+  local script_dir vault_root vault_abs note_abs rel_path filename msg sha
 
   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   vault_root="$(cd "${script_dir}/.." && pwd)"
@@ -30,14 +30,23 @@ main() {
     exit 0
   fi
 
-  if [[ ! -f "$note_path" ]]; then
+  note_abs="$(realpath -m -- "${note_path}")"
+  vault_abs="$(realpath -m -- "${vault_root}")"
+
+  if [[ ! -f "${note_abs}" ]]; then
     echo "COMMIT_STATUS=skipped"
     echo "COMMIT_REASON=note-not-found"
     exit 0
   fi
 
-  rel_path="${note_path#${vault_root}/}"
-  filename="$(basename "$note_path")"
+  if [[ "${note_abs}" != "${vault_abs}/"* ]]; then
+    echo "COMMIT_STATUS=skipped"
+    echo "COMMIT_REASON=note-outside-vault"
+    exit 0
+  fi
+
+  rel_path="${note_abs#${vault_abs}/}"
+  filename="$(basename "${note_abs}")"
   msg="chore(vault): save ${filename}"
 
   git -C "${vault_root}" add -- "${rel_path}"

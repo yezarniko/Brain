@@ -18,4 +18,6 @@ Personal knowledge base and automation playground for the vault workflow describ
 ## Working with the repo
 - Keep `.git` history clean; commit new notes and resource additions as separate logical steps when possible.
 - This repository already targets `git@github.com:yezarniko/Brain.git` on `main`. Push changes via `git push` once you have commits ready.
+- Auto-push is configured through `scripts/git-hooks/post-commit`. Enable it locally with `git config core.hooksPath scripts/git-hooks`; once enabled, each successful commit will immediately push the current branch to `origin`.
+- To temporarily disable auto-push, run `git config --unset core.hooksPath`.
 - If you ever need to recreate the vault on a new machine, clone the repo, re-establish any needed remotes, and the scripts will continue to work as long as you have a clipboard utility in your shell.
