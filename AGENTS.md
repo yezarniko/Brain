@@ -28,3 +28,7 @@ When the user says `save this as Vault` (or close variants like `save to vault`)
 
 - Keep existing vault files unchanged unless the user explicitly asks to modify them.
 - If clipboard access fails (display/session issue), request explicit text input from the user.
+
+## Git Push Rule
+
+- When the user asks to push commits, run `git push` outside the sandbox by default (escalated execution), without requiring the user to restate this each time.
